@@ -1,0 +1,80 @@
+﻿using Newtonsoft.Json;
+
+namespace ValueCards.Models
+{
+  public class Consumer
+  {
+    [JsonProperty("@href")]
+    public string Href { get; set; }
+    public int Id { get; set; }
+    public int ContractId { get; set; }
+    public string Name { get; set; }
+    [JsonProperty("xValidFrom")]
+    public string ValidFrom { get; set; }
+    [JsonProperty("xValidUntil")]
+    public string ValidUntil { get; set; }
+    public string FilialId { get; set; }
+  }
+
+  public class Person
+  {
+    public string FirstName { get; set; }
+    public string Surname { get; set; }
+  }
+
+  public class UsageProfile
+  {
+    [JsonProperty("@href")]
+    public string Href { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+  }
+
+  public class Identification
+  {
+    public int PtcpType { get; set; }
+    public int Cardclass { get; set; }
+    public int IdentificationType { get; set; }
+    public string ValidFrom { get; set; }
+    public string ValidUntil { get; set; }
+    public UsageProfile UsageProfile { get; set; }
+    public string Admission { get; set; }
+    public int IgnorePresence { get; set; }
+    public bool Present { get; set; }
+    public int Status { get; set; }
+    public int PtcpGrpNo { get; set; }
+    [JsonProperty("ChrgOvdrftAcct")]
+    public int ChargeOverDraftAccount { get; set; }
+  }
+
+  public class CustomerAttributes
+  {
+    public string ProductionDate { get; set; }
+    public int ProductionCount { get; set; }
+    public int FlatFeeFirstCharge { get; set; }
+    public int FlatFeeLastCharge { get; set; }
+    public int FlatFeeCalc { get; set; }
+    public string FlatFeeCalcUntil { get; set; }
+    public int IndividualInvoicing { get; set; }
+    public int FlatRateAmt { get; set; }
+    public string FlatFeeTax { get; set; }
+    public string InvoiceType { get; set; }
+  }
+
+  public class ConsumerDetail
+  {
+    public Consumer Consumer { get; set; }
+    public Person Person { get; set; }
+    public string FirstName { get; set; }
+    public string Surname { get; set; }
+    public Identification Identification { get; set; }
+    [JsonProperty("CustomerAtributes")]
+    public CustomerAttributes CustomerAttributes { get; set; }
+    public string DisplayText { get; set; }
+    public int Limit { get; set; }
+    public int Status { get; set; }
+    public int Delete { get; set; }
+    public int IgnorePresence { get; set; }
+  }
+}
