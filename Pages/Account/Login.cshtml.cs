@@ -1,4 +1,4 @@
-﻿using ValueCards.Data;
+﻿using ValueCards.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,14 +17,14 @@ namespace ValueCards.Areas.Admin.Pages.Account
   [AllowAnonymous]
   public class LoginModel : PageModel
   {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<SBUser> _userManager;
+    private readonly SignInManager<SBUser> _signInManager;
     private readonly ILogger<LoginModel> _logger;
     private readonly IEmailSender _emailSender;
 
-    public LoginModel(SignInManager<ApplicationUser> signInManager,
+    public LoginModel(SignInManager<SBUser> signInManager,
         ILogger<LoginModel> logger,
-        UserManager<ApplicationUser> userManager,
+        UserManager<SBUser> userManager,
         IEmailSender emailSender)
     {
       _userManager = userManager;

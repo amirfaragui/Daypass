@@ -1,4 +1,4 @@
-﻿using ValueCards.Data;
+﻿using ValueCards.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +12,9 @@ namespace ValueCards.Areas.Admin.Pages.Account
   [AllowAnonymous]
   public class ConfirmEmailModel : PageModel
   {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly UserManager<SBUser> _userManager;
 
-    public ConfirmEmailModel(UserManager<ApplicationUser> userManager)
+    public ConfirmEmailModel(UserManager<SBUser> userManager)
     {
       _userManager = userManager;
     }
@@ -39,7 +39,6 @@ namespace ValueCards.Areas.Admin.Pages.Account
       var result = await _userManager.ConfirmEmailAsync(user, code);
       if(result == IdentityResult.Success)
       {
-        user.Active = true;
         await _userManager.UpdateAsync(user);
       }
 

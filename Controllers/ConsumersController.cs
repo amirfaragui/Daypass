@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ValueCards.Services;
@@ -22,6 +23,11 @@ namespace ValueCards.Controllers
     public IActionResult Index()
     {
       return View();
+    }
+
+    public async Task<IActionResult> Read([DataSourceRequest]DataSourceRequest request)
+    {
+      return Json(_consumerService.Read(request));
     }
   }
 }

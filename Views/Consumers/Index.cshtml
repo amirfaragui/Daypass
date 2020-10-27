@@ -1,5 +1,38 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿
+@(Html.Kendo().Grid<ValueCards.Models.ConsumerModel>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(model => model.Id).Visible(false);
+        columns.Bound(model => model.CardNumber).Width(80);
+        columns.Bound(model => model.FirstName).Width(120);
+        columns.Bound(model => model.Surname).Width(120);
+        columns.Bound(model => model.Balance).Width(100);
+        columns.Bound(model => model.ValidUntil).Width(150);
+
+        //columns.Command(command =>
+        //{
+        //  command.Edit();
+        //  command.Destroy();
+        //}).Width(200);
+
+      })
+  .Pageable(p =>
+  {
+    p.Refresh(true);
+    p.PageSizes(new int[] { 50, 100, 200 });
+  })
+  .Scrollable(scrollable => scrollable.Enabled(true).Height("calc(100vh - 230px)").Endless(true))
+  .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+  .DataSource(datasource => datasource
+    .Ajax()
+    .Model(model =>
+    {
+      model.Id(o => o.Id);
+    })
+    .Read(read => read.Action("read", "consumers"))
+    .PageSize(50)
+  )
+  .Resizable(resize => resize.Columns(true))
+  .Sortable()
+)

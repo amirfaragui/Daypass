@@ -1,4 +1,4 @@
-﻿using ValueCards.Data;
+﻿using ValueCards.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +11,10 @@ namespace ValueCards.Areas.Admin.Pages.Account
   [AllowAnonymous]
   public class LogoutModel : PageModel
   {
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly SignInManager<SBUser> _signInManager;
     private readonly ILogger<LogoutModel> _logger;
 
-    public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger)
+    public LogoutModel(SignInManager<SBUser> signInManager, ILogger<LogoutModel> logger)
     {
       _signInManager = signInManager;
       _logger = logger;

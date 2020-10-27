@@ -1,4 +1,4 @@
-﻿using ValueCards.Data;
+﻿using ValueCards.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -7,36 +7,32 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace ValueCards.Services
+namespace ValueCards.Services.Identity
 {
-  public class ApplicationSignInManager : SignInManager<ApplicationUser>
+  public class SBSignInManager : SignInManager<SBUser>
   {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly ApplicationDbContext _dbContext;
+    private readonly UserManager<SBUser> _userManager;
     private readonly IHttpContextAccessor _contextAccessor;
+    private readonly IApiClient _apiClient;
 
-    public ApplicationSignInManager(
-      UserManager<ApplicationUser> userManager,
+    public SBSignInManager(
+      UserManager<SBUser> userManager,
               IHttpContextAccessor contextAccessor,
-              IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory,
+              IUserClaimsPrincipalFactory<SBUser> claimsFactory,
               IOptions<IdentityOptions> optionsAccessor,
-              ILogger<SignInManager<ApplicationUser>> logger,
-              ApplicationDbContext dbContext,
+              ILogger<SignInManager<SBUser>> logger,
               IAuthenticationSchemeProvider schemeProvider,
-              IUserConfirmation<ApplicationUser> userConfirmation)
+              IUserConfirmation<SBUser> userConfirmation,
+              IApiClient apiClient)
       : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemeProvider, userConfirmation)
     {
       _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
       _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
-      _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+      _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
     }
 
-    public override Task<SignInResult> CheckPasswordSignInAsync(ApplicationUser user, string password, bool lockoutOnFailure)
+    public override Task<SignInResult> CheckPasswordSignInAsync(SBUser user, string password, bool lockoutOnFailure)
     {
-      if (!user.Active)
-      {
-        return Task.FromResult(SignInResult.Failed);
-      }
 
       return base.CheckPasswordSignInAsync(user, password, lockoutOnFailure);
     }

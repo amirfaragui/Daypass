@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using ValueCards.Data;
+using ValueCards.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,11 +9,11 @@ namespace ValueCards.Areas.Admin.Pages.Account.Manage
 {
     public class PersonalDataModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<SBUser> _userManager;
         private readonly ILogger<PersonalDataModel> _logger;
 
         public PersonalDataModel(
-            UserManager<ApplicationUser> userManager,
+            UserManager<SBUser> userManager,
             ILogger<PersonalDataModel> logger)
         {
             _userManager = userManager;

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Kendo.Mvc.UI;
 
 namespace ValueCards.Services
 {
   public interface IConsumerService
   {
+    DataSourceResult Read([DataSourceRequest] DataSourceRequest request);
   }
 }

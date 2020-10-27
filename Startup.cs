@@ -1,4 +1,3 @@
-using ValueCards.Data;
 using ValueCards.Models;
 using ValueCards.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -16,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Text;
+using ValueCards.Services.Identity;
 
 namespace ValueCards
 {
@@ -33,10 +33,6 @@ namespace ValueCards
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddDbContext<ApplicationDbContext>(options =>
-          options.UseSqlServer(
-              Configuration.GetConnectionString("DefaultConnection")));
-
       services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
 
       services.AddControllersWithViews()
@@ -60,13 +56,13 @@ namespace ValueCards
       }
 #endif
 
-      services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+      services.AddDefaultIdentity<SBUser>(options =>
       {
-        options.SignIn.RequireConfirmedAccount = true;
+        options.SignIn.RequireConfirmedAccount = false;
       })
-      .AddEntityFrameworkStores<ApplicationDbContext>()
-      .AddSignInManager<ApplicationSignInManager>()
-      .AddDefaultTokenProviders();
+        .AddUserStore<SBUserStore>()      
+        .AddSignInManager<SBSignInManager>()
+        .AddDefaultTokenProviders();
 
       services.AddAuthentication();
 
@@ -90,9 +86,12 @@ namespace ValueCards
 
       services.AddKendo();
 
+      services.AddScoped<IApiClient, ApiClient>();
+      services.AddScoped<IConsumerRepository, CachedConsumerRepository>();
+      services.AddScoped<IConsumerService, ConsumerService>();
+
       services.AddSingleton<IEmailSender, EmailSender>();
       services.AddSingleton<IRichEmailSender, EmailSender>(x => (EmailSender)x.GetService<IEmailSender>());
-      services.AddSingleton<IConsumerService, ConsumerService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

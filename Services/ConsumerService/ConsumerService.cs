@@ -1,23 +1,34 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ValueCards.Models;
 
 namespace ValueCards.Services
 {
-  public class ConsumerService: IConsumerService
+  public class ConsumerService : IConsumerService
   {
     private readonly ILogger<ConsumerService> _logger;
-    private readonly WebServiceOption _webService;
+    private readonly IConsumerRepository _repository;
 
-    public ConsumerService(IOptions<WebServiceOption> options,
-                           ILogger<ConsumerService> logger)
+    public ConsumerService(ILogger<ConsumerService> logger,
+                           IConsumerRepository repository)
     {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-      _webService = options?.Value ?? throw new ArgumentNullException(nameof(options));
+      _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    }
+
+    public DataSourceResult Read([DataSourceRequest] DataSourceRequest request)
+    {
+      return _repository.Read(request).ToDataSourceResult(request, i => new ConsumerModel
+      {
+        Id = $"{i.Consumer.ContractId},{i.Consumer.Id}",
+        FirstName = i.Person?.FirstName ?? i.FirstName,
+        Surname = i.Person?.Surname ?? i.Surname,
+        ValidUntil = i.Consumer.ValidUntil,
+        CardNumber = i.Identification.CardNumber ?? $"{i.Consumer.ContractId},{i.Consumer.Id}",
+      });
     }
 
   }

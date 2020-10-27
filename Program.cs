@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using System.IO;
 
 namespace ValueCards
 {
@@ -10,15 +11,18 @@ namespace ValueCards
   {
     public static int Main(string[] args)
     {
+      var path = AppDomain.CurrentDomain.BaseDirectory;
+
       var configuration = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
         .AddEnvironmentVariables()
         .Build();
 
-      var logConfiguration = new LoggerConfiguration()
-        .ReadFrom.Configuration(configuration);
-
+      var logFileTemplate = Path.Combine(path, "Logs", "log-{Date}.txt");
+      var outputTemplate = @"===> [{Timestamp:HH:mm:ss} {Level} {SourceContext}] {Message:lj}{NewLine}{Exception}";
+      var logConfiguration = new LoggerConfiguration().ReadFrom.Configuration(configuration);
+      logConfiguration.WriteTo.File(logFileTemplate, outputTemplate: outputTemplate);
       Log.Logger = logConfiguration.CreateLogger();
 
       try
@@ -44,6 +48,7 @@ namespace ValueCards
             {
               webBuilder.UseStartup<Startup>();
               webBuilder.UseSerilog();
-            });
+            })
+            .UseWindowsService();
   }
 }

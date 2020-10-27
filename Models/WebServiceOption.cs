@@ -1,4 +1,7 @@
-﻿namespace ValueCards.Models
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace ValueCards.Models
 {
   public class Credential
   {
@@ -9,5 +12,7 @@
   {
     public string Url { get; set; }
     public Credential Credential { get; set; }
+
+    public IEnumerable<int> ContractNumbersOfInterest { get; set; }
   }
 }

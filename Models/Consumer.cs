@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace ValueCards.Models
 {
@@ -7,6 +9,7 @@ namespace ValueCards.Models
     [JsonProperty("@href")]
     public string Href { get; set; }
     public int Id { get; set; }
+    [JsonProperty("contractid")]
     public int ContractId { get; set; }
     public string Name { get; set; }
     [JsonProperty("xValidFrom")]
@@ -33,8 +36,10 @@ namespace ValueCards.Models
 
   public class Identification
   {
-    public int PtcpType { get; set; }
+    public int PtcptType { get; set; }
     public int Cardclass { get; set; }
+    [JsonProperty("cardno")]
+    public string CardNumber { get; set; }
     public int IdentificationType { get; set; }
     public string ValidFrom { get; set; }
     public string ValidUntil { get; set; }
@@ -76,5 +81,32 @@ namespace ValueCards.Models
     public int Status { get; set; }
     public int Delete { get; set; }
     public int IgnorePresence { get; set; }
+  }
+
+  public class ConsumerModel
+  {
+    public string Id { get; set; }
+    public string FirstName { get; set; }
+    public string Surname { get; set; }
+    public string ValidUntil { get; set; }
+    public string CardNumber { get; set; }
+    public decimal? Balance { get; set; }
+  }
+
+  class ConsumerList
+  {
+    [JsonProperty("consumer")]
+    public Consumer[] Consumers { get; set; }
+
+  }
+
+  class ConsumerListResponse
+  {    
+    public ConsumerList Consumers { get; set; }
+  }
+
+  class ConsumerDetailResponse
+  {
+    public ConsumerDetail ConsumerDetail { get; set; }
   }
 }
