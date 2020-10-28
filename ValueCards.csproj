@@ -24,6 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Identity\SBUserManager.cs" />
     <Compile Remove="Services\MyAuthenticationSchemeProvider.cs" />
   </ItemGroup>
 

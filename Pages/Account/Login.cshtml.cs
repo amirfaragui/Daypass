@@ -11,6 +11,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using ValueCards.Services.Identity;
 
 namespace ValueCards.Areas.Admin.Pages.Account
 {
@@ -18,11 +20,11 @@ namespace ValueCards.Areas.Admin.Pages.Account
   public class LoginModel : PageModel
   {
     private readonly UserManager<SBUser> _userManager;
-    private readonly SignInManager<SBUser> _signInManager;
+    private readonly SBSignInManager _signInManager;
     private readonly ILogger<LoginModel> _logger;
     private readonly IEmailSender _emailSender;
 
-    public LoginModel(SignInManager<SBUser> signInManager,
+    public LoginModel(SBSignInManager signInManager,
         ILogger<LoginModel> logger,
         UserManager<SBUser> userManager,
         IEmailSender emailSender)
@@ -68,7 +70,7 @@ namespace ValueCards.Areas.Admin.Pages.Account
       returnUrl = returnUrl ?? Url.Content("~/");
 
       // Clear the existing external cookie to ensure a clean login process
-      await HttpContext.SignOutAsync("ADMIN");
+      await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
 
       ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
@@ -77,7 +79,7 @@ namespace ValueCards.Areas.Admin.Pages.Account
 
     public async Task<IActionResult> OnPostAsync(string returnUrl = null)
     {
-      returnUrl = returnUrl ?? Url.Content("~/Admin/Home/index");
+      returnUrl = returnUrl ?? Url.Content("~/consumers/index");
 
       if (ModelState.IsValid)
       {

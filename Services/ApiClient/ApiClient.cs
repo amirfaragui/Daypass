@@ -1,11 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Authenticators;
 using RestSharp.Serializers.NewtonsoftJson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -32,6 +35,7 @@ namespace ValueCards.Services
       _client.Authenticator = new HttpBasicAuthenticator(_serviceOption.Credential.Username, _serviceOption.Credential.Password);
       _client.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
       _client.UseNewtonsoftJson();
+      _client.FailOnDeserializationError = false;
     }
 
     public void SetCredential(Credential credential)
@@ -39,19 +43,20 @@ namespace ValueCards.Services
       _client.Authenticator = new HttpBasicAuthenticator(credential.Username, credential.Password);
     }
 
+    #region Consumers
     public IObservable<ConsumerDetail> GetConsumerDetails(int? contractId, CancellationToken cancellationToken = default)
     {
       var subject = new Subject<ConsumerDetail>();
       Task.Run(() => GetConsumerDetailsTask(contractId, subject, cancellationToken));
       return subject;
-    } 
-    
+    }
+
     public IAsyncEnumerable<ConsumerDetail> GetConsumerDetailsAsync(int? contractId, CancellationToken cancellationToken = default)
     {
       return GetConsumerDetails(contractId, cancellationToken).ToAsyncEnumerable();
     }
 
-    private async IAsyncEnumerable<Consumer> GetConsumers(int? contractId, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+    private async IAsyncEnumerable<Consumer> GetConsumers(int? contractId, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
       var request = new RestRequest("CustomerMediaWebService/consumers");
       if (contractId.HasValue)
@@ -94,9 +99,9 @@ namespace ValueCards.Services
 
             var response = await _client.GetAsync<ConsumerDetailResponse>(detailRequest, cancellationToken);
             var details = response?.ConsumerDetail;
-            if(details?.Identification != null)
+            if (details?.Identification != null)
             {
-              if(details.Identification.PtcptType == 6)   // Value Card
+              if (details.Identification.PtcptType == 6)   // Value Card
               {
                 subject.OnNext(details);
               }
@@ -124,5 +129,38 @@ namespace ValueCards.Services
         throw;
       }
     }
+    #endregion
+
+    #region Cashier
+    public async Task<IEnumerable<Cashier>> GetCashiersAsync(CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        var request = new RestRequest("PaymentWebService/cashiers");
+        request.AddHeader("Accept", "application/json");
+        request.Method = Method.GET;
+        var response = await _client.ExecuteGetAsync(request, cancellationToken);
+        switch(response.StatusCode)
+        {
+          case System.Net.HttpStatusCode.Unauthorized:
+            throw new UnauthorizedAccessException();
+        }
+
+        if(response.IsSuccessful)
+        {
+          var result = JsonConvert.DeserializeObject<CashierListResponse>(response.Content);
+          return result.Cashiers;
+        }
+
+        throw new HttpRequestException() { HResult = (int)response.StatusCode };        
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex.ToString());
+        throw;
+      }
+    }
+
+    #endregion
   }
 }

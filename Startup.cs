@@ -16,6 +16,8 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Text;
 using ValueCards.Services.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ValueCards
 {
@@ -60,15 +62,42 @@ namespace ValueCards
       {
         options.SignIn.RequireConfirmedAccount = false;
       })
-        .AddUserStore<SBUserStore>()      
+        .AddUserStore<SBUserStore>()
+        .AddClaimsPrincipalFactory<SBUserClaimsPrincipalFactory>()
+        //.AddUserManager<SBUserManager>()
         .AddSignInManager<SBSignInManager>()
         .AddDefaultTokenProviders();
 
-      services.AddAuthentication();
+      //services.AddScoped<SBUserManager>();
+      //services.AddScoped<UserManager<SBUser>>(x => (UserManager<SBUser>)x.GetRequiredService<SBUserManager>());
 
-      services.AddScoped<IAuthenticationHandlerProvider, MyAuthenticationHandlerProvider>();
+      services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+          options.LoginPath = "/account/login";
+        });
+      services.Configure<CookiePolicyOptions>(options =>
+      {
+        options.CheckConsentNeeded = context => true;
+        options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
+      });
 
-      services.AddAuthorization();
+      services.AddAuthorization(options =>
+      {
+        var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme);
+        defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+        options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+
+        options.AddPolicy(CookieAuthenticationDefaults.AuthenticationScheme, policy =>
+        {
+          policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
+          //policy.AuthenticationSchemes.Add(IdentityConstants.ApplicationScheme);
+          policy.RequireAuthenticatedUser();
+          //policy.RequireClaim("operator-id");
+        });
+      });
+      //services.AddScoped<IAuthenticationHandlerProvider, MyAuthenticationHandlerProvider>();
+
 
       services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 

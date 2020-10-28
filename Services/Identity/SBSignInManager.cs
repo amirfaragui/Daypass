@@ -6,13 +6,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Linq;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace ValueCards.Services.Identity
 {
   public class SBSignInManager : SignInManager<SBUser>
   {
-    private readonly UserManager<SBUser> _userManager;
-    private readonly IHttpContextAccessor _contextAccessor;
     private readonly IApiClient _apiClient;
 
     public SBSignInManager(
@@ -26,15 +28,52 @@ namespace ValueCards.Services.Identity
               IApiClient apiClient)
       : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemeProvider, userConfirmation)
     {
-      _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-      _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
       _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
     }
 
-    public override Task<SignInResult> CheckPasswordSignInAsync(SBUser user, string password, bool lockoutOnFailure)
+    public override async Task<SignInResult> CheckPasswordSignInAsync(SBUser user, string password, bool lockoutOnFailure)
     {
+      _apiClient.SetCredential(new Credential
+      {
+        Username = user.UserName,
+        Password = password,
+      });
 
-      return base.CheckPasswordSignInAsync(user, password, lockoutOnFailure);
+      try
+      {
+        var cashiers = await _apiClient.GetCashiersAsync();
+        var cashier = cashiers.FirstOrDefault(i => i.CashierConsumerId == user.UserName);
+        if (cashier == null)
+        {
+          return SignInResult.Failed;
+        }
+        user.Password = password;
+        user.CashierConsumerId = cashier.CashierConsumerId;
+        user.CashierContractId = cashier.CashierContractId;
+
+        await UserManager.UpdateAsync(user);
+
+      }
+      catch (Exception ex)
+      {
+        Logger.LogError(ex.ToString());
+        return SignInResult.Failed;
+      }
+
+      return SignInResult.Success;
     }
+
+    public override async Task SignInWithClaimsAsync(SBUser user, AuthenticationProperties authenticationProperties, IEnumerable<Claim> additionalClaims)
+    {
+      var userPrincipal = await CreateUserPrincipalAsync(user);
+      foreach (var claim in additionalClaims)
+      {
+        userPrincipal.Identities.First().AddClaim(claim);
+      }
+      await Context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+          userPrincipal,
+          authenticationProperties ?? new AuthenticationProperties());
+    }
+
   }
 }

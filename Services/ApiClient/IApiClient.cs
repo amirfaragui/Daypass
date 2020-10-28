@@ -12,5 +12,6 @@ namespace ValueCards.Services
     void SetCredential(Credential credential);
     IObservable<ConsumerDetail> GetConsumerDetails(int? contractId, CancellationToken cancellationToken = default);
     IAsyncEnumerable<ConsumerDetail> GetConsumerDetailsAsync(int? contractId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Cashier>> GetCashiersAsync(CancellationToken cancellationToken = default);
   }
 }

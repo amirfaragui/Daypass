@@ -9,5 +9,7 @@ namespace ValueCards.Models
   public class SBUser: IdentityUser<string>
   {
     public string Password { get; set; }
+    public string CashierContractId { get; set; }
+    public string CashierConsumerId { get; set; }
   }
 }

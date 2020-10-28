@@ -64,10 +64,22 @@ namespace ValueCards.Services.Identity
       return Task.FromResult(user);
     }
 
-    public Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+    public async Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
     {
       var user = Users.FirstOrDefault(i => i.NormalizedUserName == normalizedUserName);
-      return Task.FromResult(user);
+      if(user == null)
+      {
+        user = Activator.CreateInstance<TUser>();
+        user.Id = normalizedUserName;
+        user.UserName = normalizedUserName;
+        user.NormalizedUserName = normalizedUserName;
+        
+        if(await CreateAsync(user, cancellationToken) != IdentityResult.Success)
+        {
+          user = null;
+        }
+      }
+      return user;
     }
 
     public Task<string> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken)
