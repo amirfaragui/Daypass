@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Authenticators;
+using RestSharp.Serializers;
 using RestSharp.Serializers.NewtonsoftJson;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using System.Xml.Serialization;
 using ValueCards.Models;
 
 namespace ValueCards.Services
@@ -161,6 +163,109 @@ namespace ValueCards.Services
       }
     }
 
+    #endregion
+
+    #region Shift
+    public async Task<Shift> GetActiveShiftAsync(string cashierContractId, string cashierConsumerId, CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        var request = new RestRequest($"PaymentWebService/cashiers/{cashierContractId},{cashierConsumerId}/shifts");
+        request.AddHeader("Accept", "application/json");
+        request.Method = Method.GET;
+        var response = await _client.ExecuteGetAsync(request, cancellationToken);
+
+        if (response.IsSuccessful)
+        {
+          if(response.Content == "null")
+          {
+            return null;
+          }
+
+          try
+          {
+            var result = JsonConvert.DeserializeObject<ShiftResponse>(response.Content);
+            var shift = result.Shift;
+            if(shift.FinishDateTime.HasValue)
+            {
+              return null;
+            }
+            return shift;
+          }
+          catch (JsonSerializationException)
+          {
+            var result = JsonConvert.DeserializeObject<ShiftListResponse>(response.Content);
+            var shift = result.Shifts.FirstOrDefault(i => i.ShiftStatus == 1);
+            return shift;
+          }
+
+        }
+
+        throw new HttpRequestException() { HResult = (int)response.StatusCode };
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex.ToString());
+        throw;
+      }
+    }
+
+    public async Task<Shift> CreateShiftAsync(Cashier cashier, Device device, CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        var request = new RestRequest($"PaymentWebService/shifts");
+        request.AddHeader("Accept", "application/json");        
+        request.Method = Method.POST;
+        request.XmlSerializer = new DotNetXmlSerializer("http://gsph.sub.com/payment/types");
+
+        var body = new NewShift()
+        {
+          CashierContractId = cashier.CashierContractId,
+          CashierConsumerId = cashier.CashierConsumerId,
+          ComputerId = device.ComputerId,
+          DeviceId = device.DeviceId,
+          ShiftNo = DateTime.Now.ToString("yyMMddHHmm"),
+          CreateDateTime = DateTime.Now,
+        };
+        
+        request.AddXmlBody(body, "http://gsph.sub.com/payment/types");
+
+        var response = await _client.ExecutePostAsync(request, cancellationToken);
+
+        if (response.IsSuccessful)
+        {
+          var shift = JsonConvert.DeserializeObject<Shift>(response.Content);
+          return shift;
+        }
+
+        throw new HttpRequestException() { HResult = (int)response.StatusCode };
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex.ToString());
+        throw;
+      }
+    }
+    #endregion
+
+    #region Device
+    public async Task<IEnumerable<Device>> GetDevicesAsync(CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        var request = new RestRequest($"PaymentWebService/devices");
+        request.AddHeader("Accept", "application/json");
+        request.Method = Method.GET;
+        var response = await _client.GetAsync<DeviceListResponse>(request, cancellationToken);
+        return response.Devices;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex.ToString());
+        throw;
+      }
+    }
     #endregion
   }
 }

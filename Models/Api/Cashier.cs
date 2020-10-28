@@ -9,7 +9,7 @@ namespace ValueCards.Models
     public string Surname { get; set; }
   }
 
-  public class CashierListResponse
+  class CashierListResponse
   {
     [JsonProperty("cashier")]
     public Cashier[] Cashiers { get; set; }

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 
 namespace ValueCards.Services.Identity
 {
@@ -41,6 +42,12 @@ namespace ValueCards.Services.Identity
 
       try
       {
+        //var c1 = new Cashier() { CashierContractId = "5", CashierConsumerId = "501" };
+        //var d1 = new Device { ComputerId = "2020", DeviceId = "702" };
+        //var ns = await _apiClient.CreateShiftAsync(c1, d1);
+
+
+
         var cashiers = await _apiClient.GetCashiersAsync();
         var cashier = cashiers.FirstOrDefault(i => i.CashierConsumerId == user.UserName);
         if (cashier == null)
@@ -51,6 +58,16 @@ namespace ValueCards.Services.Identity
         user.CashierConsumerId = cashier.CashierConsumerId;
         user.CashierContractId = cashier.CashierContractId;
 
+        var activeShift = await _apiClient.GetActiveShiftAsync(user.CashierContractId, user.CashierConsumerId);
+        if(activeShift == null)
+        {
+          var devices = await _apiClient.GetDevicesAsync();
+          var device = devices.FirstOrDefault(i => i.DeviceLongName.ToLower().Contains("cashier")) ?? devices.FirstOrDefault();
+
+          activeShift = await _apiClient.CreateShiftAsync(cashier, device);
+        }
+
+        user.ShiftId = activeShift.ShiftId;
         await UserManager.UpdateAsync(user);
 
       }

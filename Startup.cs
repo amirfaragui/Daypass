@@ -96,10 +96,9 @@ namespace ValueCards
           //policy.RequireClaim("operator-id");
         });
       });
+
       //services.AddScoped<IAuthenticationHandlerProvider, MyAuthenticationHandlerProvider>();
-
-
-      services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
+      //services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 
       services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
       services.Configure<CookieTempDataProviderOptions>(options =>
