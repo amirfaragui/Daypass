@@ -74,3 +74,12 @@ body {
 .k-widget, .k-button, .dropdown-menu, .btn, .form-control {
   font-size: 0.75rem;
 }
+
+
+tr > td.k-command-cell > a.k-button {
+  display: none;
+}
+
+tr:hover > td.k-command-cell > a.k-button {
+  display: inline-flex;
+}

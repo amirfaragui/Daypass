@@ -10,11 +10,10 @@
         columns.Bound(model => model.Balance).Width(100);
         columns.Bound(model => model.ValidUntil).Width(150);
 
-        //columns.Command(command =>
-        //{
-        //  command.Edit();
-        //  command.Destroy();
-        //}).Width(200);
+        columns.Command(command =>
+        {
+          command.Custom("Topup").Text("Topup").Click("onTopUp");
+        }).Width(200);
 
       })
   .Pageable(p =>
@@ -36,3 +35,15 @@
   .Resizable(resize => resize.Columns(true))
   .Sortable()
 )
+
+@section Scripts{ 
+  <script type="text/javascript">
+      function onTopUp(e) {
+      e.preventDefault();
+
+      var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+      var url = '@Url.Action("topup", "consumers")/' + dataItem.Id;
+      newTab = window.open(url, '_blank');
+    }
+  </script>
+}

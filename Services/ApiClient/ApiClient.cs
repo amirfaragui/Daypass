@@ -99,8 +99,9 @@ namespace ValueCards.Services
             detailRequest.AddHeader("Accept", "application/json");
             detailRequest.Method = Method.GET;
 
-            var response = await _client.GetAsync<ConsumerDetailResponse>(detailRequest, cancellationToken);
-            var details = response?.ConsumerDetail;
+            var response = await _client.ExecuteGetAsync<ConsumerDetailResponse>(detailRequest, cancellationToken);
+            _logger.LogDebug(response.Content);
+            var details = response.Data.ConsumerDetail;
             if (details?.Identification != null)
             {
               if (details.Identification.PtcptType == 6)   // Value Card
@@ -115,8 +116,20 @@ namespace ValueCards.Services
           }
         }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 3 });
 
-        var result = await _client.GetAsync<ConsumerListResponse>(request, cancellationToken);
-        foreach (var c in result.Consumers.Consumers)
+        IEnumerable<Consumer> consumers = null;
+        var response  = await _client.ExecuteGetAsync(request, cancellationToken);
+        _logger.LogDebug(response.Content);
+        try
+        {
+          var result = JsonConvert.DeserializeObject<ConsumerListResponse>(response.Content);
+          consumers = result.Consumers.Consumers;
+        }
+        catch (JsonSerializationException)
+        {
+          var result = JsonConvert.DeserializeObject<SingleConsumer>(response.Content);
+          consumers = result.Consumers;
+        }
+        foreach (var c in consumers)
         {
           getBlock.Post(c);
         }

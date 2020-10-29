@@ -1,0 +1,85 @@
+﻿@model ValueCards.Models.ConsumerTopupModel
+
+<div id="messages" class="k-content"></div>
+
+@(Html.Kendo().Form<ValueCards.Models.ConsumerTopupModel>()
+  .Name("form")
+  .HtmlAttributes(new { method = "POST", style = "width: 500px;"})
+  .Orientation("horizontal")
+  .Items(items =>
+  {
+    items.AddGroup()
+      .Label("Topup Value Card")
+      .Items(i =>
+      {
+        i.Add().Field(f => f.Amount);
+        i.Add().Field(f => f.Id).Label(" ").EditorTemplate("<input name='Id' type='hidden' />");
+      });
+    items.AddGroup()
+      .Label("Customer")
+      .Items(i =>
+      {
+        i.Add().Field(f => f.CardNumber).EditorTemplate("<input name='CardNumber' class='k-textbox' disabled />");
+        i.Add().Field(f => f.FirstName).EditorTemplate("<input name='FirstName' class='k-textbox' disabled />"); ;
+        i.Add().Field(f => f.Surname).EditorTemplate("<input name='Surname' class='k-textbox' disabled />"); ;
+        i.Add().Field(f => f.ValidUntil).EditorTemplate("<input name='ValidUntil' class='k-textbox' disabled />");
+        i.Add().Field(f => f.Balance).EditorTemplate("<input name='Balance' class='k-textbox' disabled />"); ;
+      });
+
+  })
+  .Events(events => events.Submit("onSubmit"))
+  .Validatable(v =>
+  {
+    v.ValidateOnBlur(true);
+    v.ValidationSummary(vs => vs.Enable(false));
+  })
+)
+
+@(Html.Kendo().Notification().Name("notification")
+  .Animation(animation =>
+  {
+    animation.Open(open => open.SlideIn(SlideDirection.Down).Duration(AnimationDuration.Normal));
+    animation.Close(c => c.Fade(FadeDirection.Out).Duration(AnimationDuration.Slow));
+  })
+  .AppendTo("#messages")
+  //.Position(postion => postion.Top(70))
+)
+
+@section Scripts {
+  <script type="text/javascript">
+    $.fn.serializeObject = function () {
+      var o = {};
+      this.serializeArray().map(function (x) { o[x.name] = x.value; });
+      return o;
+    };
+
+    $(function () {
+      var amount = $("#Amount").data("kendoNumericTextBox");
+      amount.focus();
+    });
+
+    function onSubmit(e) {
+      e.preventDefault();
+
+      var popupNotification = $("#notification").data("kendoNotification");
+
+      var url = $('#form').attr('action');
+      var model = $('#form').serializeObject();
+      $.post(url, model, function (data) {
+        console.log("succeed");
+        popupNotification.show("Done", "success");
+        var container = $(popupNotification.options.appendTo);
+        container.scrollTop(container[0].scrollHeight);
+      })
+        .fail(function (e) {
+          console.error(e);
+          var m = JSON.parse(e.responseText);
+          popupNotification.show(m.message, "error");
+
+        })
+        .always(function () {
+        });
+
+    }
+  </script>
+}
