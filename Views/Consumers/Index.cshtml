@@ -7,7 +7,7 @@
         columns.Bound(model => model.CardNumber).Width(80);
         columns.Bound(model => model.FirstName).Width(120);
         columns.Bound(model => model.Surname).Width(120);
-        columns.Bound(model => model.Balance).Width(100);
+        columns.Bound(model => model.Balance).Width(100).Format("{0:C}");
         columns.Bound(model => model.ValidUntil).Width(150);
 
         columns.Command(command =>
@@ -16,6 +16,7 @@
         }).Width(200);
 
       })
+  .ToolBar(t => t.Search())
   .Pageable(p =>
   {
     p.Refresh(true);
@@ -34,6 +35,10 @@
   )
   .Resizable(resize => resize.Columns(true))
   .Sortable()
+  .Search(search =>
+  {
+    search.Field(i => i.CardNumber).Field(i => i.FirstName).Field(i => i.Surname);
+  })
 )
 
 @section Scripts{ 

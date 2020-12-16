@@ -9,5 +9,7 @@ namespace ValueCards.Services
     IEnumerable<ConsumerDetail> Consumers { get; }
 
     IEnumerable<ConsumerDetail> Read(DataSourceRequest request);
+
+    void UpdateCachedValues(string contractId, string consumerId, decimal toppedUpAmount);
   }
 }

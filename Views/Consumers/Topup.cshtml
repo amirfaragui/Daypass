@@ -67,9 +67,14 @@
       var model = $('#form').serializeObject();
       $.post(url, model, function (data) {
         console.log("succeed");
-        popupNotification.show("Done", "success");
+        popupNotification.show("Request processed, the value card has been topped up.", "success");
         var container = $(popupNotification.options.appendTo);
         container.scrollTop(container[0].scrollHeight);
+
+        var form = $("#form").data("kendoForm");
+        form.clear();
+
+        $(".k-form-submit").attr("disabled", "disabled");
       })
         .fail(function (e) {
           console.error(e);

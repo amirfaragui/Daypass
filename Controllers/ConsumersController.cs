@@ -16,7 +16,9 @@ namespace ValueCards.Controllers
   {
     private readonly IConsumerService _consumerService;
     private readonly ILogger<ConsumersController> _logger;
+    private readonly IApiClient _apiClient;
     public ConsumersController(IConsumerService consumerService,
+                               
                                ILogger<ConsumersController> logger)
     {
       _consumerService = consumerService ?? throw new ArgumentNullException(nameof(consumerService));
@@ -51,6 +53,7 @@ namespace ValueCards.Controllers
           Surname = i.Person?.Surname ?? i.Surname,
           ValidUntil = i.Consumer.ValidUntil,
           CardNumber = i.Identification.CardNumber ?? $"{i.Consumer.ContractId},{i.Consumer.Id}",
+          Balance = i.Balance,
         })
         .FirstOrDefault();
 
@@ -61,17 +64,33 @@ namespace ValueCards.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> Topup(ConsumerTopupModel model)
+    public async Task<IActionResult> Topup(string id, ConsumerTopupModel model)
     {
-      if(ModelState.IsValid)
-      {
+      if(model == null)
+        throw new ArgumentNullException(nameof(model));
 
+      if (string.IsNullOrEmpty(id))
+        return BadRequest();
+
+      var parts = id.Split(',');
+      if (parts.Length != 2)
+        return BadRequest();
+
+      try
+      {
+        model.Id = id;
+        await _consumerService.PostPaymentAsync(model);
+        return Created("", model);
       }
-
-      return new ObjectResult(new { message = "Function not implemented yet." })
+      catch (ApiErrorException aex)
       {
-        StatusCode = 500,
-      };
+        return new ObjectResult(new { message = aex.Message }) { StatusCode = (int)aex.StutusCode };
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex.ToString());
+        throw;
+      }
     }
   }
 }

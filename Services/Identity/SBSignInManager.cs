@@ -42,10 +42,25 @@ namespace ValueCards.Services.Identity
 
       try
       {
-        //var c1 = new Cashier() { CashierContractId = "5", CashierConsumerId = "501" };
-        //var d1 = new Device { ComputerId = "2020", DeviceId = "702" };
-        //var ns = await _apiClient.CreateShiftAsync(c1, d1);
+        //var t = new Transaction()
+        //{
+        //  ShiftId = "1234",
+        //  ComputerId = "2020",
+        //  DeviceId = "701",
+        //  CashierContractId = "5",
+        //  CashierConsumerId = "501",
+        //};
+        //var c = new MoneyValueCard(10m)
+        //{
+        //  ContractId = "4",
+        //  ConsumerId = "401",
+        //};
+        //var p = new TransactionDetail(c)
+        //{
+        //  Transaction = t
+        //};
 
+        //await _apiClient.PostPayment(p);
 
 
         var cashiers = await _apiClient.GetCashiersAsync();
@@ -68,6 +83,9 @@ namespace ValueCards.Services.Identity
         }
 
         user.ShiftId = activeShift.ShiftId;
+        user.ComputerId = activeShift.ComputerId;
+        user.DeviceId = activeShift.DeviceId;
+
         await UserManager.UpdateAsync(user);
 
       }

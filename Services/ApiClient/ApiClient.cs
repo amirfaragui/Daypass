@@ -7,14 +7,17 @@ using RestSharp.Serializers;
 using RestSharp.Serializers.NewtonsoftJson;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using System.Xml;
 using System.Xml.Serialization;
 using ValueCards.Models;
 
@@ -106,6 +109,21 @@ namespace ValueCards.Services
             {
               if (details.Identification.PtcptType == 6)   // Value Card
               {
+                try
+                {
+                  var balanceRequest = new RestRequest($@"PaymentWebService/media/personalizedMoneyValue/{c.ContractId},{c.Id}");
+                  var balanceResponse = await _client.ExecuteGetAsync<BalanceResponse>(balanceRequest, cancellationToken);
+               
+                  if(balanceResponse.Data.MoneyValue.HasValue)
+                  {
+                    details.Balance = balanceResponse.Data.MoneyValue.Value / 100;
+                  }
+                }
+                catch (Exception ex)
+                {
+                  _logger.LogError(ex.ToString());
+                }
+
                 subject.OnNext(details);
               }
             }
@@ -245,6 +263,7 @@ namespace ValueCards.Services
         request.AddXmlBody(body, "http://gsph.sub.com/payment/types");
 
         var response = await _client.ExecutePostAsync(request, cancellationToken);
+        _logger.LogDebug(response.Content);
 
         if (response.IsSuccessful)
         {
@@ -252,7 +271,15 @@ namespace ValueCards.Services
           return shift;
         }
 
-        throw new HttpRequestException() { HResult = (int)response.StatusCode };
+        try
+        {
+          var error = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
+          throw new ApiErrorException(error.Error) { StutusCode = response.StatusCode };
+        }
+        catch (JsonSerializationException)
+        {
+          throw new HttpRequestException() { HResult = (int)response.StatusCode };
+        }
       }
       catch (Exception ex)
       {
@@ -280,5 +307,57 @@ namespace ValueCards.Services
       }
     }
     #endregion
+
+    public async Task<Transaction> PostPayment(TransactionDetail transaction, CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        var request = new RestRequest($"PaymentWebService/shifts/{transaction.Transaction.ShiftId}/salestransactions");
+        request.AddHeader("Accept", "application/json");
+        request.AddHeader("Content-Type", "application/xml");
+        request.Method = Method.PUT;
+        //request.XmlSerializer = new DotNetXmlSerializer("http://gsph.sub.com/payment/types");
+        //request.AddXmlBody(transaction, "http://gsph.sub.com/payment/types");
+
+        using var stream = new MemoryStream();
+        using var writer = new XmlTextWriter(stream, Encoding.UTF8);
+        var serializer = new System.Xml.Serialization.XmlSerializer(typeof(TransactionDetail));
+
+        var ns = new XmlSerializerNamespaces();
+        ns.Add("pay", "http://gsph.sub.com/payment/types");
+
+        serializer.Serialize(writer, transaction, ns);
+
+        var body = Encoding.UTF8.GetString(stream.ToArray());
+        _logger.LogDebug(body);
+
+        request.AddParameter("application/xml", body, ParameterType.RequestBody);
+
+        var response = await _client.ExecuteAsync(request, cancellationToken);
+        _logger.LogDebug(body);
+
+        if (response.IsSuccessful)
+        {
+          var result = JsonConvert.DeserializeObject<Transaction>(response.Content);
+          return result;
+        }
+
+        try
+        {
+          var error = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
+          throw new ApiErrorException(error.Error) { StutusCode = response.StatusCode };
+        }
+        catch (JsonSerializationException)
+        {
+          throw new HttpRequestException() { HResult = (int)response.StatusCode };
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex.ToString());
+        throw;
+      }
+
+    }
   }
 }

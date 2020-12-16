@@ -91,9 +91,8 @@ namespace ValueCards
         options.AddPolicy(CookieAuthenticationDefaults.AuthenticationScheme, policy =>
         {
           policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
-          //policy.AuthenticationSchemes.Add(IdentityConstants.ApplicationScheme);
           policy.RequireAuthenticatedUser();
-          //policy.RequireClaim("operator-id");
+          policy.RequireClaim("shiftId");
         });
       });
 

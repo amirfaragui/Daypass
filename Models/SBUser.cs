@@ -12,5 +12,7 @@ namespace ValueCards.Models
     public string CashierContractId { get; set; }
     public string CashierConsumerId { get; set; }
     public string ShiftId { get; set; }
+    public string ComputerId { get; set; }
+    public string DeviceId { get; set; }
   }
 }

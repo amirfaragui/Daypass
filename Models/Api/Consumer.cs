@@ -82,6 +82,15 @@ namespace ValueCards.Models
     public int Status { get; set; }
     public int Delete { get; set; }
     public int IgnorePresence { get; set; }
+    public decimal? Balance { get; set; }
+
+    public string CardNumber
+    {
+      get
+      {
+        return Identification?.CardNumber ?? $"{Consumer.ContractId},{Consumer.Id}";
+      }
+    }
   }
 
   public class ConsumerModel
@@ -134,5 +143,11 @@ namespace ValueCards.Models
     {
       Amount = 1m;
     }
+  }
+
+  class BalanceResponse
+  {
+    public string Epan { get; set; }
+    public decimal? MoneyValue { get; set; }
   }
 }

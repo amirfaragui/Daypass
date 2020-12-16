@@ -1,14 +1,11 @@
 ﻿using Kendo.Mvc.UI;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading;
 using ValueCards.Models;
 
@@ -99,6 +96,21 @@ namespace ValueCards.Services
 
     }
 
-
+    public void UpdateCachedValues(string contractId, string consumerId, decimal toppedUpAmount)
+    {
+      lock (_syncLock)
+      {
+        var consumers = _cache.Get("consumers") as List<ConsumerDetail>;
+        if (consumers != null)
+        {
+          var consumer = consumers.FirstOrDefault(i => i.Consumer.ContractId == contractId && i.Consumer.Id == consumerId);
+          if (consumer != null)
+          {
+            consumer.Balance += toppedUpAmount;
+            _cache.Set("consumers", consumers, TimeSpan.FromMinutes(10));
+          }
+        }
+      }
+    }
   }
 }
