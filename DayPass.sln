@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29519.87
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ValueCards", "ValueCards.csproj", "{1E01B108-6B27-41EE-A6A4-488D1E5F0B9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DayPass", "DayPass.csproj", "{1E01B108-6B27-41EE-A6A4-488D1E5F0B9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

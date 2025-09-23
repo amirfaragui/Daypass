@@ -109,6 +109,22 @@ namespace ValueCards.Models
     public decimal? Balance { get; set; }
   }
 
+   public class DayPassModel
+    {
+        [Editable(false)]
+        public string Id { get; set; }
+        [Editable(false)]
+        public string PassNumber { get; set; }
+        [Editable(false)]
+        public string StartDate { get; set; }
+        [Editable(false)]
+        public string EndDate { get; set; }
+        [Editable(false)]
+        public string NumberofDaysPurchased { get; set; }
+        [Editable(false)]
+        public string NumberofDaysRemaining { get; set; }
+    }
+
   class ConsumerList
   {
     [JsonProperty("consumer")]
