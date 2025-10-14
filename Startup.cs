@@ -98,8 +98,12 @@ namespace ValueCards
 
       //services.AddScoped<IAuthenticationHandlerProvider, MyAuthenticationHandlerProvider>();
       //services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
+     services.AddDbContext<SBUser>(options => {
+          options.UseOracle(Configuration.GetConnectionString("OracleConnection"));
+      });
 
-      services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
+
+            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
       services.Configure<CookieTempDataProviderOptions>(options =>
       {
         options.Cookie.IsEssential = true;
