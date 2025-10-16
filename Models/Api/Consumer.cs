@@ -93,7 +93,7 @@ namespace ValueCards.Models
     }
   }
 
-  public class ConsumerModel
+  public class ApiConsumerModel
   {
     [Editable(false)]
     public string Id { get; set; }
@@ -149,7 +149,7 @@ namespace ValueCards.Models
     public ConsumerDetail ConsumerDetail { get; set; }
   }
 
-  public class ConsumerTopupModel : ConsumerModel
+  public class ConsumerTopupModel : ApiConsumerModel
   {
     [Required]
     [Range(0.01, 1000)]

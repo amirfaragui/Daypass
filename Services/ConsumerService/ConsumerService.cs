@@ -29,9 +29,9 @@ namespace ValueCards.Services
       _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
 
-    public DataSourceResult Read([DataSourceRequest] DataSourceRequest request)
+    public DataSourceResult APIRead([DataSourceRequest] DataSourceRequest request)
     {
-      return _repository.Read(request).ToDataSourceResult(request, i => new ConsumerModel
+      return _repository.APIRead(request).ToDataSourceResult(request, i => new ApiConsumerModel
       {
         Id = $"{i.Consumer.ContractId},{i.Consumer.Id}",
         FirstName = i.Person?.FirstName ?? i.FirstName,
@@ -40,6 +40,19 @@ namespace ValueCards.Services
         CardNumber = i.CardNumber, // i.Identification.CardNumber ?? $"{i.Consumer.ContractId},{i.Consumer.Id}",
         Balance= i.Balance,
       });
+    }
+
+    public DataSourceResult Read([DataSourceRequest] DataSourceRequest request)
+    {
+            return _repository.Read(request).ToDataSourceResult(request, i => new DayPassModel
+            {
+                Id = i.CTRACK,
+                PassNumber = i.CEPAN,
+                StartDate = i.DTCREAT.ToString(),
+                EndDate = i.DTEXPIRE.ToString(),
+                NumberofDaysPurchased = i.DAYVALD.ToString(),
+                NumberofDaysRemaining = i.NBEXIT.ToString(),
+            });
     }
 
     public async Task<Transaction> PostPaymentAsync(ConsumerTopupModel model, CancellationToken cancellationToken = default)

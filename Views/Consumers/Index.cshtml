@@ -1,14 +1,13 @@
-﻿
-@(Html.Kendo().Grid<ValueCards.Models.ConsumerModel>()
+﻿@(Html.Kendo().Grid<ValueCards.Models.DayPassModel>()
       .Name("grid")
       .Columns(columns =>
       {
         columns.Bound(model => model.Id).Visible(false);
-        columns.Bound(model => model.CardNumber).Width(80);
-        columns.Bound(model => model.FirstName).Width(120);
-        columns.Bound(model => model.Surname).Width(120);
-        columns.Bound(model => model.Balance).Width(100).Format("{0:C}");
-        columns.Bound(model => model.ValidUntil).Width(150);
+        columns.Bound(model => model.PassNumber).Width(80);
+        columns.Bound(model => model.StartDate).Width(120);
+        columns.Bound(model => model.EndDate).Width(120);
+        columns.Bound(model => model.NumberofDaysPurchased).Width(100);
+        columns.Bound(model => model.NumberofDaysRemaining).Width(150);
 
         columns.Command(command =>
         {
@@ -44,7 +43,7 @@
   .Sortable()
   .Search(search =>
   {
-    search.Field(i => i.CardNumber).Field(i => i.FirstName).Field(i => i.Surname);
+    search.Field(i => i.PassNumber);
   })
 )
 

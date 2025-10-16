@@ -18,6 +18,7 @@ using System.Text;
 using ValueCards.Services.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using DayPass.Data;
 
 namespace ValueCards
 {
@@ -98,7 +99,7 @@ namespace ValueCards
 
       //services.AddScoped<IAuthenticationHandlerProvider, MyAuthenticationHandlerProvider>();
       //services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
-     services.AddDbContext<SBUser>(options => {
+     services.AddDbContext<ApplicationDBContext>(options => {
           options.UseOracle(Configuration.GetConnectionString("OracleConnection"));
       });
 

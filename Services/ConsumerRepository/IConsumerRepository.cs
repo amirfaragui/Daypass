@@ -1,4 +1,5 @@
-﻿using Kendo.Mvc.UI;
+﻿using DayPass.Data;
+using Kendo.Mvc.UI;
 using System.Collections.Generic;
 using ValueCards.Models;
 
@@ -6,10 +7,15 @@ namespace ValueCards.Services
 {
   public interface IConsumerRepository
   {
-    IEnumerable<ConsumerDetail> Consumers { get; }
+    IEnumerable<CONGBARCODE> Consumers { get; }
 
-    IEnumerable<ConsumerDetail> Read(DataSourceRequest request);
+    IEnumerable<CONGBARCODE> Read(DataSourceRequest request);
 
     void UpdateCachedValues(string contractId, string consumerId, decimal toppedUpAmount);
-  }
+    IEnumerable<ConsumerDetail> APIConsumers { get; }
+
+   IEnumerable<ConsumerDetail> APIRead(DataSourceRequest request);
+
+   void APIUpdateCachedValues(string contractId, string consumerId, decimal toppedUpAmount);
+    }
 }

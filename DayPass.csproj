@@ -24,6 +24,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Logs\**" />
+    <Content Remove="Logs\**" />
+    <EmbeddedResource Remove="Logs\**" />
+    <None Remove="Logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Services\Identity\SBUserManager.cs" />
     <Compile Remove="Services\MyAuthenticationSchemeProvider.cs" />
   </ItemGroup>
@@ -59,12 +66,6 @@
     <PackageReference Include="System.Linq.Async" Version="4.1.1" />
     <PackageReference Include="System.Reactive" Version="4.4.1" />
     <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2020.3.1021" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Logs\" />
   </ItemGroup>
 
 </Project>

@@ -44,7 +44,7 @@ namespace ValueCards.Controllers
       if (parts.Length != 2)
         return BadRequest();
 
-      var item = repository.Consumers
+      var item = repository.APIConsumers
         .Where(i => i.Consumer.ContractId == parts[0] && i.Consumer.Id == parts[1])
         .Select(i => new ConsumerTopupModel
         {

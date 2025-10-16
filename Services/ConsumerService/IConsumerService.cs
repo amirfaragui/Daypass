@@ -7,8 +7,8 @@ namespace ValueCards.Services
 {
   public interface IConsumerService
   {
-    DataSourceResult Read([DataSourceRequest] DataSourceRequest request);
-
-    Task<Transaction> PostPaymentAsync(ConsumerTopupModel model, CancellationToken cancellationToken = default);
+    DataSourceResult APIRead([DataSourceRequest] DataSourceRequest request);
+   DataSourceResult Read([DataSourceRequest] DataSourceRequest request);
+   Task<Transaction> PostPaymentAsync(ConsumerTopupModel model, CancellationToken cancellationToken = default);
   }
 }
