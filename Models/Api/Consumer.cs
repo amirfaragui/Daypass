@@ -114,7 +114,7 @@ namespace ValueCards.Models
         [Editable(false)]
         public string Id { get; set; }
         [Editable(false)]
-        public string PassNumber { get; set; }
+        public string CEPAN { get; set; }
         [Editable(false)]
         public string StartDate { get; set; }
         [Editable(false)]

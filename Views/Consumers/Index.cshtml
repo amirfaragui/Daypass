@@ -3,7 +3,7 @@
       .Columns(columns =>
       {
         columns.Bound(model => model.Id).Visible(false);
-        columns.Bound(model => model.PassNumber).Width(80);
+          columns.Bound(model => model.CEPAN).Width(80);
         columns.Bound(model => model.StartDate).Width(120);
         columns.Bound(model => model.EndDate).Width(120);
         columns.Bound(model => model.NumberofDaysPurchased).Width(100);
@@ -43,7 +43,7 @@
   .Sortable()
   .Search(search =>
   {
-    search.Field(i => i.PassNumber);
+      search.Field(i => i.CEPAN);
   })
 )
 

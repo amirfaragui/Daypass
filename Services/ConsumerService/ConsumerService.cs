@@ -47,7 +47,7 @@ namespace ValueCards.Services
             return _repository.Read(request).ToDataSourceResult(request, i => new DayPassModel
             {
                 Id = i.CTRACK,
-                PassNumber = i.CEPAN,
+                CEPAN = i.CEPAN,
                 StartDate = i.DTCREAT.ToString(),
                 EndDate = i.DTEXPIRE.ToString(),
                 NumberofDaysPurchased = i.DAYVALD.ToString(),
