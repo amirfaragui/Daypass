@@ -149,19 +149,31 @@ namespace ValueCards.Models
     public ConsumerDetail ConsumerDetail { get; set; }
   }
 
-  public class ConsumerTopupModel : ApiConsumerModel
+  public class APIConsumerTopupModel : ApiConsumerModel
   {
     [Required]
     [Range(0.01, 1000)]
     public decimal Amount { get; set; }
 
-    public ConsumerTopupModel()
+    public APIConsumerTopupModel()
     {
       Amount = 1m;
     }
   }
 
-  class BalanceResponse
+    public class ConsumerTopupModel : DayPassModel
+    {
+        [Required]
+        [Range(1, 1000)]
+        public decimal Amount { get; set; }
+
+        public ConsumerTopupModel()
+        {
+            Amount = 1m;
+        }
+    }
+
+    class BalanceResponse
   {
     public string Epan { get; set; }
     public decimal? MoneyValue { get; set; }

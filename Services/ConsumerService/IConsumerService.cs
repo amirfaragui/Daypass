@@ -9,6 +9,6 @@ namespace ValueCards.Services
   {
     DataSourceResult APIRead([DataSourceRequest] DataSourceRequest request);
    DataSourceResult Read([DataSourceRequest] DataSourceRequest request);
-   Task<Transaction> PostPaymentAsync(ConsumerTopupModel model, CancellationToken cancellationToken = default);
+   Task<Transaction> PostPaymentAsync(APIConsumerTopupModel model, CancellationToken cancellationToken = default);
   }
 }

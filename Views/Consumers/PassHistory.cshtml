@@ -3,7 +3,7 @@
       .Columns(columns =>
       {
         columns.Bound(model => model.Id).Visible(false);
-        columns.Bound(model => model.CEPAN).Width(160);
+        columns.Bound(model => model.CEPAN).Width(120);
         columns.Bound(model => model.StartDate).Width(120);
         columns.Bound(model => model.EndDate).Width(120);
         columns.Bound(model => model.NumberofDaysPurchased).Width(100);
@@ -17,7 +17,7 @@
 
         columns.Command(command =>
        {
-             command.Custom("History").Text("History").Click("onPassHistory");
+             command.Custom("History").Text("History").Click("onTopUp");
 
        }).Width(200);
 
@@ -53,15 +53,8 @@
       e.preventDefault();
 
       var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-          var url = '@Url.Action("topup", "consumers")/' + dataItem.CEPAN;
+      var url = '@Url.Action("topup", "consumers")/' + dataItem.Id;
       newTab = window.open(url, '_blank');
     }
-         function onPassHistory(e) {
-          e.preventDefault();
-
-          var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-              var url = '@Url.Action("passhistory", "consumers")/' + dataItem.CEPAN;
-          newTab = window.open(url, '_blank');
-        }
   </script>
 }

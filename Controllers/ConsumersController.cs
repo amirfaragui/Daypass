@@ -40,20 +40,19 @@ namespace ValueCards.Controllers
       if (id == null)
         throw new ArgumentNullException(nameof(id));
 
-      var parts = id.Split(',');
+   /**   var parts = id.Split(',');
       if (parts.Length != 2)
-        return BadRequest();
+        return BadRequest();**/
 
-      var item = repository.APIConsumers
-        .Where(i => i.Consumer.ContractId == parts[0] && i.Consumer.Id == parts[1])
+      var item = repository.Consumers
+        .Where(i => i.CEPAN.Contains(id))
         .Select(i => new ConsumerTopupModel
         {
-          Id = $"{i.Consumer.ContractId},{i.Consumer.Id}",
-          FirstName = i.Person?.FirstName ?? i.FirstName,
-          Surname = i.Person?.Surname ?? i.Surname,
-          ValidUntil = i.Consumer.ValidUntil,
-          CardNumber = i.Identification.CardNumber ?? $"{i.Consumer.ContractId},{i.Consumer.Id}",
-          Balance = i.Balance,
+          Id = i.CTRACK,
+          CEPAN = i.CEPAN,
+          StartDate = i.DTCREAT.ToString(),
+          EndDate = i.DTEXPIRE.ToString(),
+          Amount = i.MAXEXIT,
         })
         .FirstOrDefault();
 
@@ -64,7 +63,7 @@ namespace ValueCards.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> Topup(string id, ConsumerTopupModel model)
+    public async Task<IActionResult> Topup(string id, APIConsumerTopupModel model)
     {
       if(model == null)
         throw new ArgumentNullException(nameof(model));

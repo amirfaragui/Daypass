@@ -55,7 +55,7 @@ namespace ValueCards.Services
             });
     }
 
-    public async Task<Transaction> PostPaymentAsync(ConsumerTopupModel model, CancellationToken cancellationToken = default)
+    public async Task<Transaction> PostPaymentAsync(APIConsumerTopupModel model, CancellationToken cancellationToken = default)
     {
       var user = _httpContextAccessor.HttpContext.User;
 
