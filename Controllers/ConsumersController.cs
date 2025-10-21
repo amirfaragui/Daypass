@@ -1,4 +1,5 @@
 ﻿using DayPass.Data;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -71,23 +72,21 @@ namespace ValueCards.Controllers
            if (id == null)
                 throw new ArgumentNullException(nameof(id));
 
-           var items = _dbContext.UDBMOVEMENT.AsQueryable().Where(a=> a.CEPAN.Contains(id)).ToList();
-           var item = repository.Consumers
-          .Where(i => i.CEPAN.Contains(id))
-          .Select(i => new ConsumerTopupModel
-          {
-              Id = i.CTRACK,
-              CEPAN = i.CEPAN,
-              StartDate = i.DTCREAT.ToString(),
-              EndDate = i.DTEXPIRE.ToString(),
-              Amount = i.DAYVALD,
-          })
-          .FirstOrDefault();
+            var items = _dbContext.UDBMOVEMENT.AsQueryable().Where(a => a.CEPAN.Contains(id)).Select(
+                i => new HistoryModel
+            {
+                    Id = i.LGLOBALID.ToString(),
+                    CEPAN = i.CEPAN,
+                    ActionDate = i.TACTIONTIME.ToString(),
+                    StationName = i.SDEVICE.ToString(),
+            }
+            );
+          
 
-            if (item == null)
+            if (items == null)
                 return NotFound();
 
-            return View(item);
+            return View(items);
         }
    
         
