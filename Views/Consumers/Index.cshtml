@@ -71,7 +71,7 @@
           e.preventDefault();
 
           var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-              var url = '@Url.Action("passhistory", "consumers")/' + dataItem.CEPAN;
+          var url = '@Url.Action("passhistory", "consumers")/' + dataItem.CEPAN;
           newTab = window.open(url, '_blank');
         }
   </script>

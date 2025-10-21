@@ -125,8 +125,21 @@ namespace ValueCards.Models
         public string NumberofDaysRemaining { get; set; }
     }
 
-  class ConsumerList
-  {
+
+    public class HistoryModel
+    {
+        [Editable(false)]
+        public string Id { get; set; }
+        [Editable(false)]
+        public string CEPAN { get; set; }
+        [Editable(false)]
+        public string ActionDate { get; set; }
+        [Editable(false)]
+        public string StationName { get; set; }
+      
+    }
+    class ConsumerList
+    {
     [JsonProperty("consumer")]
     public Consumer[] Consumers { get; set; }
 

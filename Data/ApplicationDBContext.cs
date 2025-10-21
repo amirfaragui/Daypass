@@ -6,6 +6,7 @@ namespace DayPass.Data
     public class ApplicationDBContext : DbContext
     {
         public DbSet<CONGBARCODE> CONGBARCODE { get; set; }
+        public DbSet<UDBMOVEMENT> UDBMOVEMENT { get; set; }
 
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
            : base(options)

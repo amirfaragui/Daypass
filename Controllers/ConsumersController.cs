@@ -65,6 +65,32 @@ namespace ValueCards.Controllers
       return View(item);
     }
 
+  
+   public IActionResult PassHistory(string id, [FromServices] IConsumerRepository repository)
+   {
+           if (id == null)
+                throw new ArgumentNullException(nameof(id));
+
+           var items = _dbContext.UDBMOVEMENT.AsQueryable().Where(a=> a.CEPAN.Contains(id)).ToList();
+           var item = repository.Consumers
+          .Where(i => i.CEPAN.Contains(id))
+          .Select(i => new ConsumerTopupModel
+          {
+              Id = i.CTRACK,
+              CEPAN = i.CEPAN,
+              StartDate = i.DTCREAT.ToString(),
+              EndDate = i.DTEXPIRE.ToString(),
+              Amount = i.DAYVALD,
+          })
+          .FirstOrDefault();
+
+            if (item == null)
+                return NotFound();
+
+            return View(item);
+        }
+   
+        
     [HttpPost]
     public async Task<IActionResult> Topup(string id, ConsumerTopupModel model)
     {
