@@ -11,7 +11,7 @@ namespace ValueCards.Services
 
     IEnumerable<CONGBARCODE> Read(DataSourceRequest request);
 
-    void UpdateCachedValues(string contractId, string consumerId, decimal toppedUpAmount);
+    void UpdateValue(string epan, decimal toppedUpAmount);
     IEnumerable<ConsumerDetail> APIConsumers { get; }
 
    IEnumerable<ConsumerDetail> APIRead(DataSourceRequest request);

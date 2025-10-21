@@ -81,7 +81,7 @@ namespace ValueCards.Services
 
       var result = await _apiClient.PostPayment(p);
 
-      _repository.UpdateCachedValues(parts[0], parts[1], model.Amount);      
+      _repository.APIUpdateCachedValues(parts[0], parts[1], model.Amount);      
 
       return result;
     }

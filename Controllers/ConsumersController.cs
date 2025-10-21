@@ -1,7 +1,9 @@
-﻿using Kendo.Mvc.UI;
+﻿using DayPass.Data;
+using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -17,13 +19,18 @@ namespace ValueCards.Controllers
     private readonly IConsumerService _consumerService;
     private readonly ILogger<ConsumersController> _logger;
     private readonly IApiClient _apiClient;
+    private readonly ApplicationDBContext _dbContext;
+    private readonly IConsumerRepository _repository;
     public ConsumersController(IConsumerService consumerService,
-                               
-                               ILogger<ConsumersController> logger)
+                               IConsumerRepository repository,
+                              ILogger<ConsumersController> logger,
+                               ApplicationDBContext dBContext)
     {
       _consumerService = consumerService ?? throw new ArgumentNullException(nameof(consumerService));
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+      _dbContext = dBContext ?? throw new ArgumentNullException((nameof(dBContext)));
+      _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+     }
 
     public IActionResult Index()
     {
@@ -40,10 +47,6 @@ namespace ValueCards.Controllers
       if (id == null)
         throw new ArgumentNullException(nameof(id));
 
-   /**   var parts = id.Split(',');
-      if (parts.Length != 2)
-        return BadRequest();**/
-
       var item = repository.Consumers
         .Where(i => i.CEPAN.Contains(id))
         .Select(i => new ConsumerTopupModel
@@ -52,7 +55,7 @@ namespace ValueCards.Controllers
           CEPAN = i.CEPAN,
           StartDate = i.DTCREAT.ToString(),
           EndDate = i.DTEXPIRE.ToString(),
-          Amount = i.MAXEXIT,
+          Amount = i.DAYVALD,
         })
         .FirstOrDefault();
 
@@ -63,7 +66,7 @@ namespace ValueCards.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> Topup(string id, APIConsumerTopupModel model)
+    public async Task<IActionResult> Topup(string id, ConsumerTopupModel model)
     {
       if(model == null)
         throw new ArgumentNullException(nameof(model));
@@ -71,15 +74,17 @@ namespace ValueCards.Controllers
       if (string.IsNullOrEmpty(id))
         return BadRequest();
 
-      var parts = id.Split(',');
-      if (parts.Length != 2)
-        return BadRequest();
 
       try
       {
-        model.Id = id;
-        await _consumerService.PostPaymentAsync(model);
-        return Created("", model);
+        
+        var entityToUpdate =  _dbContext.CONGBARCODE.SingleOrDefault(e=>e.CEPAN.Contains(id));
+        if (entityToUpdate == null)
+                return BadRequest();
+       entityToUpdate.DAYVALD = model.Amount;
+       await _dbContext.SaveChangesAsync();
+       _repository.UpdateValue(id,model.Amount);
+       return Created("", model);
       }
       catch (ApiErrorException aex)
       {

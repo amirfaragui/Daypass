@@ -1,25 +1,23 @@
 ﻿@(Html.Kendo().Grid<ValueCards.Models.DayPassModel>()
       .Name("grid")
+      .Events(e => e.DataBound("onDataBound"))
       .Columns(columns =>
       {
         columns.Bound(model => model.Id).Visible(false);
         columns.Bound(model => model.CEPAN).Width(160);
-        columns.Bound(model => model.StartDate).Width(120);
-        columns.Bound(model => model.EndDate).Width(120);
+        columns.Bound(model => model.StartDate).Width(120).Title("Start Validity");
+        columns.Bound(model => model.EndDate).Width(120).Title("End Validity");
         columns.Bound(model => model.NumberofDaysPurchased).Width(100);
         columns.Bound(model => model.NumberofDaysRemaining).Width(150);
 
         columns.Command(command =>
         {
           command.Custom("Topup").Text("Edit").Click("onTopUp");
+          command.Custom("History").Text("History").Click("onPassHistory");
           
-        }).Width(80);
+        }).Width(120).Title("Action");
 
-        columns.Command(command =>
-       {
-             command.Custom("History").Text("History").Click("onPassHistory");
-
-       }).Width(200);
+    
 
       })
   .ToolBar(t => t.Search())
@@ -49,13 +47,26 @@
 
 @section Scripts{ 
   <script type="text/javascript">
-      function onTopUp(e) {
-      e.preventDefault();
+        function onDataBound() {
+            $("#grid").find(".k-grid-Topup").css("background-color", "#4CAF50").css("color", "white");
+            $("#grid").find(".k-grid-History").css("background-color", "#2196F3").css("color", "white");
+            var today = new Date();
+            $("#grid tbody tr").each(function() {
+            var endDateText = $(this).find("td:nth-child(3)").text(); 
+            var endDate = new Date(endDateText);
 
-      var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            if (endDate < today) {
+                $(this).css("background-color", "red");
+                $(this).css("color", "white");
+            }
+        });
+        }
+      function onTopUp(e) {
+          e.preventDefault();
+          var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
           var url = '@Url.Action("topup", "consumers")/' + dataItem.CEPAN;
-      newTab = window.open(url, '_blank');
-    }
+            newTab = window.open(url, '_blank');
+        }
          function onPassHistory(e) {
           e.preventDefault();
 

@@ -5,7 +5,7 @@
 @(
 Html.Kendo().Form<ValueCards.Models.ConsumerTopupModel>()
   .Name("form")
-  .HtmlAttributes(new { method = "POST", style = "width: 500px;"})
+  .HtmlAttributes(new { method = "POST", style = "width: 500px;" })
   .Orientation("horizontal")
   .Items(items =>
   {
@@ -14,7 +14,7 @@ Html.Kendo().Form<ValueCards.Models.ConsumerTopupModel>()
       .Items(i =>
       {
           i.Add().Field(f => f.Amount).Label("Number of Days");
-          i.Add().Field(f => f.Id).Label(" ").EditorTemplate("<input name='Id' type='hidden' />");
+        //  i.Add().Field(f => f.CEPAN).Label(" ");//.EditorTemplate("<input name='Id' type='hidden' />");
       });
       items.AddGroup()
       .Label("Customer")
@@ -68,7 +68,7 @@ Html.Kendo().Form<ValueCards.Models.ConsumerTopupModel>()
       var model = $('#form').serializeObject();
       $.post(url, model, function (data) {
         console.log("succeed");
-        popupNotification.show("Request processed, the value card has been topped up.", "success");
+        popupNotification.show("Request processed, the Day pass has been topped up.", "success");
         var container = $(popupNotification.options.appendTo);
         container.scrollTop(container[0].scrollHeight);
 

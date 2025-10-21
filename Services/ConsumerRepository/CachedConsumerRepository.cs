@@ -18,7 +18,7 @@ namespace ValueCards.Services
     private readonly IApiClient _apiClient;
     private readonly IMemoryCache _cache;
     private readonly WebServiceOption _options;
-        private readonly ApplicationDBContext _dbContext;
+    private readonly ApplicationDBContext _dbContext;
 
     private readonly object _syncLock;
 
@@ -79,17 +79,17 @@ namespace ValueCards.Services
             return consumers;
         }
 
-    public void UpdateCachedValues(string contractId, string consumerId, decimal toppedUpAmount)
+    public void UpdateValue(string epan,  decimal toppedUpAmount)
     {
       lock (_syncLock)
       {
-        var consumers = _cache.Get("consumers") as List<ConsumerDetail>;
+        var consumers = _cache.Get("consumers") as List<CONGBARCODE>;
         if (consumers != null)
         {
-          var consumer = consumers.FirstOrDefault(i => i.Consumer.ContractId == contractId && i.Consumer.Id == consumerId);
+          var consumer = consumers.FirstOrDefault(i => i.CEPAN.Contains(epan));
           if (consumer != null)
           {
-            consumer.Balance += toppedUpAmount;
+            consumer.DAYVALD = toppedUpAmount;
             _cache.Set("consumers", consumers, TimeSpan.FromMinutes(10));
           }
         }
