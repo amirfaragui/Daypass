@@ -106,7 +106,9 @@ namespace ValueCards.Controllers
         var entityToUpdate =  _dbContext.CONGBARCODE.SingleOrDefault(e=>e.CEPAN.Contains(id));
         if (entityToUpdate == null)
                 return BadRequest();
+       var diffAmount = entityToUpdate.MAXEXIT - model.Amount;
        entityToUpdate.DAYVALD = model.Amount;
+       entityToUpdate.NBEXIT = diffAmount;
        await _dbContext.SaveChangesAsync();
        _repository.UpdateValue(id,model.Amount);
        return Created("", model);

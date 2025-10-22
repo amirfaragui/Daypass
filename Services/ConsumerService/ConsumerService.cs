@@ -50,8 +50,8 @@ namespace ValueCards.Services
                 CEPAN = i.CEPAN,
                 StartDate = i.DTCREAT.ToString(),
                 EndDate = i.DTEXPIRE.ToString(),
-                NumberofDaysPurchased = i.DAYVALD.ToString(),
-                NumberofDaysRemaining = i.NBEXIT.ToString(),
+                NumberofDaysPurchased = i.MAXEXIT.ToString(),
+                NumberofDaysRemaining = i.DAYVALD.ToString(),
             });
     }
 
