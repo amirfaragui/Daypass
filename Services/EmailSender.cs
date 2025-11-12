@@ -20,7 +20,7 @@ namespace ValueCards.Services
     Task SendEmailAsync(string recipient, string senderName, string subject, string htmlBody, params object[] attachments);
   }
 
-  public class EmailSender : IEmailSender, IRichEmailSender
+  public class EmailSender :  IRichEmailSender
   {
     private readonly EmailSettings _emailSettings;
     private readonly IWebHostEnvironment _env;

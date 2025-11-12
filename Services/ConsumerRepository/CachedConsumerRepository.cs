@@ -45,7 +45,7 @@ namespace ValueCards.Services
         {
           lock (_syncLock)
           {
-           consumers = _dbContext.CONGBARCODE.ToEnumerable().ToList();
+           consumers = _dbContext.CONGBARCODE.ToList();
             _cache.Set("consumers", consumers, TimeSpan.FromMinutes(10));
           }
         }

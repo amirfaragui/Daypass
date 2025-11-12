@@ -22,16 +22,16 @@ namespace ValueCards.Areas.Admin.Pages.Account
     private readonly UserManager<SBUser> _userManager;
     private readonly SBSignInManager _signInManager;
     private readonly ILogger<LoginModel> _logger;
-    private readonly IEmailSender _emailSender;
+  //  private readonly IEmailSender _emailSender;
 
     public LoginModel(SBSignInManager signInManager,
         ILogger<LoginModel> logger,
-        UserManager<SBUser> userManager,
-        IEmailSender emailSender)
+        UserManager<SBUser> userManager
+        )
     {
       _userManager = userManager;
       _signInManager = signInManager;
-      _emailSender = emailSender;
+    //  _emailSender = emailSender;
       _logger = logger;
 
      
@@ -111,7 +111,7 @@ namespace ValueCards.Areas.Admin.Pages.Account
       return Page();
     }
 
-    public async Task<IActionResult> OnPostSendVerificationEmailAsync()
+ /**   public async Task<IActionResult> OnPostSendVerificationEmailAsync()
     {
       if (!ModelState.IsValid)
       {
@@ -138,6 +138,6 @@ namespace ValueCards.Areas.Admin.Pages.Account
 
       ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
       return Page();
-    }
+    }**/
   }
 }

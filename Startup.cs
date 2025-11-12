@@ -122,8 +122,8 @@ namespace ValueCards
       services.AddScoped<IConsumerRepository, CachedConsumerRepository>();
       services.AddScoped<IConsumerService, ConsumerService>();
 
-      services.AddSingleton<IEmailSender, EmailSender>();
-      services.AddSingleton<IRichEmailSender, EmailSender>(x => (EmailSender)x.GetService<IEmailSender>());
+   //   services.AddSingleton<IEmailSender, EmailSender>();
+ //     services.AddSingleton<IRichEmailSender, EmailSender>(x => (EmailSender)x.GetService<IEmailSender>());
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
