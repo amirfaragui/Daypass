@@ -66,31 +66,42 @@ namespace ValueCards.Controllers
       return View(item);
     }
 
-  
-   public IActionResult PassHistory(string id, [FromServices] IConsumerRepository repository)
-   {
-           if (id == null)
-                throw new ArgumentNullException(nameof(id));
+        public IActionResult PassHistoryPage(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return BadRequest();
 
-            var items = _dbContext.UDBMOVEMENT.AsQueryable().Where(a => a.CEPAN.Contains(id)).Select(
-                i => new HistoryModel
-            {
-                    Id = i.LGLOBALID.ToString(),
-                    CEPAN = i.CEPAN,
-                    ActionDate = i.TACTIONTIME.ToString(),
-                    StationName = i.SDEVICE.ToString(),
-            }
-            );
-          
-
-            if (items == null)
-                return NotFound();
-
-            return View(items);
+            ViewBag.CEPAN = id; // pass CEPAN to the grid
+            return View();       // PassHistoryPage.cshtml
         }
-   
-        
-    [HttpPost]
+
+        public IActionResult PassHistory([DataSourceRequest] DataSourceRequest request, string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return BadRequest("Missing id");
+
+            var query = _dbContext.UDBMOVEMENT
+            .Where(a => a.CEPAN.Contains(id))
+            .AsNoTracking() // optional
+             .ToList()       // pull all rows into memory first
+             .Select(i => new HistoryModel
+            {
+         Id = i.LGLOBALID.ToString(),
+         CEPAN = i.CEPAN,
+         ActionDate = i.TACTIONTIME?.ToString("yyyy-MM-dd HH:mm:ss") ?? "",
+         StationName = i.SDEVICE.ToString() ?? ""
+          });
+
+            // Now Kendo can operate in memory
+            var result = query.ToDataSourceResult(request);
+            return Json(result);
+
+
+        }
+
+
+
+        [HttpPost]
     public async Task<IActionResult> Topup(string id, ConsumerTopupModel model)
     {
       if(model == null)

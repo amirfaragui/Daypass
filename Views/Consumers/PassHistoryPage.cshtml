@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Pass History";
+}
+
+<h2>Pass History</h2>
+
+@(Html.Kendo().Grid<ValueCards.Models.HistoryModel>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(m => m.CEPAN).Title("CEPAN").Width(200);
+        columns.Bound(m => m.StationName).Title("Station").Width(150);
+        columns.Bound(m => m.ActionDate).Title("Date").Width(150);
+    })
+    .ToolBar(t => t.Search())
+    .Pageable(p => p
+        .Refresh(true)
+        .PageSizes(new int[] { 50, 100, 200, 500 })
+    )
+    .Sortable()
+    .Scrollable(s => s.Height("calc(100vh - 230px)"))
+    .Resizable(r => r.Columns(true))
+    .DataSource(ds => ds
+        .Ajax()
+        .Read(r => r.Action("PassHistory", "Consumers", new { id = ViewBag.CEPAN }))
+        .PageSize(50)
+        .ServerOperation(true)
+        .Model(m => m.Id(f => f.Id))
+    )
+)
