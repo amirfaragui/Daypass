@@ -71,8 +71,8 @@ namespace ValueCards.Controllers
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
 
-            ViewBag.CEPAN = id; // pass CEPAN to the grid
-            return View();       // PassHistoryPage.cshtml
+            ViewBag.CEPAN = id; 
+            return View();      
         }
 
         public IActionResult PassHistory([DataSourceRequest] DataSourceRequest request, string id)
@@ -80,20 +80,27 @@ namespace ValueCards.Controllers
             if (string.IsNullOrEmpty(id))
                 return BadRequest("Missing id");
 
-            var query = _dbContext.UDBMOVEMENT
+         /**   var query = _dbContext.UDBMOVEMENT
             .Where(a => a.CEPAN.Contains(id))
-            .AsNoTracking() // optional
-             .ToList()       // pull all rows into memory first
-             .Select(i => new HistoryModel
+            .Select(i => new HistoryModel
             {
-         Id = i.LGLOBALID.ToString(),
-         CEPAN = i.CEPAN,
-         ActionDate = i.TACTIONTIME?.ToString("yyyy-MM-dd HH:mm:ss") ?? "",
-         StationName = i.SDEVICE.ToString() ?? ""
-          });
-
-            // Now Kendo can operate in memory
-            var result = query.ToDataSourceResult(request);
+               Id = i.LGLOBALID.ToString(),
+               CEPAN = i.CEPAN,
+               ActionDate = i.TACTIONTIME.Value.ToString("G"),
+               StationName = i.SDEVICE.ToString() ?? ""
+          });**/
+            var query =  from m in _dbContext.UDBMOVEMENT
+                         join s in _dbContext.DEVINFO on m.SDEVICE equals s.SROUTINSTANCEID
+                         into stationGroup from s in stationGroup.DefaultIfEmpty() // left join
+                         where m.CEPAN.Contains(id)
+            select new HistoryModel
+           {
+               Id = m.LGLOBALID.ToString(),
+               CEPAN = m.CEPAN,
+               ActionDate = m.TACTIONTIME.Value.ToString("G"),
+               StationName = s.CDESC ?? ""
+            };
+            var result = query.ToList().ToDataSourceResult(request);
             return Json(result);
 
 
