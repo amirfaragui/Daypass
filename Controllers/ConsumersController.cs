@@ -66,7 +66,7 @@ namespace ValueCards.Controllers
       return View(item);
     }
 
-        public IActionResult PassHistoryPage(string id)
+        public IActionResult PassHistory(string id)
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
@@ -75,20 +75,11 @@ namespace ValueCards.Controllers
             return View();      
         }
 
-        public IActionResult PassHistory([DataSourceRequest] DataSourceRequest request, string id)
+        public IActionResult PassHistoryData([DataSourceRequest] DataSourceRequest request, string id)
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest("Missing id");
 
-         /**   var query = _dbContext.UDBMOVEMENT
-            .Where(a => a.CEPAN.Contains(id))
-            .Select(i => new HistoryModel
-            {
-               Id = i.LGLOBALID.ToString(),
-               CEPAN = i.CEPAN,
-               ActionDate = i.TACTIONTIME.Value.ToString("G"),
-               StationName = i.SDEVICE.ToString() ?? ""
-          });**/
             var query =  from m in _dbContext.UDBMOVEMENT
                          join s in _dbContext.DEVINFO on m.SDEVICE equals s.SROUTINSTANCEID
                          into stationGroup from s in stationGroup.DefaultIfEmpty() // left join
