@@ -1,30 +1,76 @@
 ﻿@{
-    ViewData["Title"] = "Pass History";
+    ViewData["Title"] = "Pass Information";
+    ViewBag.HideHeader = true; 
 }
 
-<h2>Pass History</h2>
+<h2>Pass Information</h2>
 
-@(Html.Kendo().Grid<ValueCards.Models.HistoryModel>()
-    .Name("grid")
-    .Columns(columns =>
-    {
-        columns.Bound(m => m.CEPAN).Title("CEPAN").Width(150);
-        columns.Bound(m => m.StationName).Title("Station").Width(150);
-        columns.Bound(m => m.ActionDate).Title("Date").Width(150);
-    })
-    .ToolBar(t => t.Search())
-    .Pageable(p => p
-        .Refresh(true)
-        .PageSizes(new int[] { 50, 100, 200, 500 })
-    )
-    .Sortable()
-    .Scrollable(s => s.Height("calc(100vh - 230px)"))
-    .Resizable(r => r.Columns(true))
-    .DataSource(ds => ds
-        .Ajax()
-        .Read(r => r.Action("PassHistory", "Consumers", new { id = ViewBag.CEPAN }))
-        .PageSize(50)
-        .ServerOperation(true)
-        .Model(m => m.Id(f => f.Id))
-    )
-)
+<!-- Move this entire script block into the Scripts section below -->
+<!-- HTML Elements to display the data -->
+<div>
+    <label>Pass Id (CEPAN):</label>
+    <span id="consumerId">Loading...</span>
+</div>
+
+<div>
+    <label for="expiry">Expire Date:</label>
+    <input type="text" id="expiry" readonly />
+</div>
+
+<div>
+    <label>Balance (Days Remaining):</label>
+    <span id="balance"></span>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        // Helper function to get a Query String parameter
+        function getPassIdFromUrl() {
+            // Extracts 'id' from a URL like: http://localhost:8080/Consumers/DisplayPass?id=6666
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // === THIS IS THE "REST OF THE AJAX LOGIC" ===
+        function getConsumerInfo(passId) {
+            // This URL still points to your API endpoint: /consumers/passinfo/6666
+            var url = "/consumers/passinfo/" + passId;
+
+            console.log("Attempting AJAX call to URL:", url); // Debug statement
+
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function(DayPassModel) {
+                    console.info("good - Success function reached"); // Debug statement
+                    // Update the HTML elements with the data received
+                    $("#consumerId").text(DayPassModel.CEPAN);
+                    $("#expiry").val(DayPassModel.EndDate);
+                    $("#balance").text(DayPassModel.NumberofDaysRemaining);
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error details:", { // Enhanced error logging
+                        xhrStatus: xhr.status,
+                        statusText: status,
+                        errorThrown: error,
+                        response: xhr.responseText
+                    });
+                    alert("Error: Could not retrieve pass info.");
+                }
+            });
+        }
+        // ===========================================
+
+        // Call the function immediately when the document is ready
+        $(document).ready(function() {
+            const passId = getPassIdFromUrl();
+            if (passId) {
+                getConsumerInfo(passId);
+            } else {
+                // Update UI if ID is missing from the URL
+                $("#consumerId").text("Error: Pass ID not found in URL Query String (?id=...).");
+            }
+        });
+    </script>
+}

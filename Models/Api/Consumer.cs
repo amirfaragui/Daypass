@@ -138,6 +138,7 @@ namespace ValueCards.Models
         public string StationName { get; set; }
       
     }
+
     class ConsumerList
     {
     [JsonProperty("consumer")]

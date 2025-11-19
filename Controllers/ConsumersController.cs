@@ -43,28 +43,48 @@ namespace ValueCards.Controllers
       return Json(_consumerService.Read(request));
     }
 
-    public IActionResult Topup(string id, [FromServices] IConsumerRepository repository)
-    {
-      if (id == null)
-        throw new ArgumentNullException(nameof(id));
-
-      var item = repository.Consumers
-        .Where(i => i.CEPAN.Contains(id))
-        .Select(i => new ConsumerTopupModel
+        public IActionResult DisplayPass(string id)
         {
-          Id = i.CTRACK,
-          CEPAN = i.CEPAN,
-          StartDate = i.DTCREAT.ToString(),
-          EndDate = i.DTEXPIRE.ToString(),
-          Amount = i.DAYVALD,
-        })
+        
+            return View("PassInfo"); 
+        }
+
+        [AllowAnonymous]
+        [Route("consumers/passinfo/{passId}")]
+        [HttpGet]
+        public IActionResult PassInfo(string passId)
+        {
+            // ... (Your logic to fetch data) ...
+            var passData = new DayPassModel
+            {
+                CEPAN = passId,
+                EndDate = "2026-05-19",
+                NumberofDaysRemaining = "45"
+            };
+            return Json(passData); 
+        }
+
+        public IActionResult Topup(string id, [FromServices] IConsumerRepository repository)
+        {
+            ArgumentNullException.ThrowIfNull(id);
+
+            var item = repository.Consumers
+            .Where(i => i.CEPAN.Contains(id))
+            .Select(i => new ConsumerTopupModel
+            {
+                Id = i.CTRACK,
+                CEPAN = i.CEPAN,
+                StartDate = i.DTCREAT.ToString(),
+                EndDate = i.DTEXPIRE.ToString(),
+                Amount = i.DAYVALD,
+            })
         .FirstOrDefault();
 
-      if (item == null)
-        return NotFound();
+            if (item == null)
+                return NotFound();
 
-      return View(item);
-    }
+            return View(item);
+        }
 
         public IActionResult PassHistory(string id)
         {

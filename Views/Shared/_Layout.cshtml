@@ -36,25 +36,28 @@
 </head>
 <body>
   <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3" style="background-color: #114176">
-        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Day Pass Management</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+   @if (!(ViewBag.HideHeader ?? false)) // Check if HideHeader is true or null/false
+        {
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3" style="background-color: #114176">
+                <a class="navbar-brand" asp-area="" asp-controller="Consumers" asp-action="Index">Day Pass Management</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-          @*<partial name="_LoginPartial" />*@
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" asp-area="" asp-controller="Consumers" asp-action="Index">Cards</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-            </li>
-          </ul>
-        </div>
-    </nav>
-  </header>
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    @*<partial name="_LoginPartial" />*@
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Consumers" asp-action="Index">Cards</a>
+                        </li>
+                      @*  <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>*@
+                    </ul>
+                </div>
+            </nav>
+        }
+    </header>
   <div class="container-fluid">
     <main role="main" class="pb-3">
       @RenderBody()
