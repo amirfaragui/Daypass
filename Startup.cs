@@ -144,7 +144,23 @@ namespace ValueCards
       //app.UseHttpsRedirection();
       app.UseStaticFiles();
 
-      app.UseRouting();
+
+     // redirect middleware
+    app.Use(async (context, next) =>
+    {
+         var path = context.Request.Path.Value ?? "";
+
+       if (path.StartsWith("/EPAN=", StringComparison.OrdinalIgnoreCase))
+       {
+           var id = path.Split("=");
+           context.Response.Redirect("/Consumers/DisplayPass?id="+ id[1]);
+           return;
+       }
+
+       await next();
+     });
+
+    app.UseRouting();
 
       app.UseAuthentication();
 
