@@ -79,7 +79,7 @@ namespace ValueCards.Services
             return consumers;
         }
 
-    public void UpdateValue(string epan,  decimal toppedUpAmount)
+    public void UpdateValue(string epan,  decimal toppedUpAmount, DateTime? endDate)
     {
       lock (_syncLock)
       {
@@ -90,6 +90,7 @@ namespace ValueCards.Services
           if (consumer != null)
           {
             consumer.DAYVALD = toppedUpAmount;
+            consumer.DTEXPIRE = endDate;
             _cache.Set("consumers", consumers, TimeSpan.FromMinutes(10));
           }
         }

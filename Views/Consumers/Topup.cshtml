@@ -14,6 +14,13 @@ Html.Kendo().Form<ValueCards.Models.ConsumerTopupModel>()
       .Items(i =>
       {
           i.Add().Field(f => f.Amount).Label("Number of Days");
+          i.Add().Field(f => f.EndDate).Editor(e =>
+       {
+         e.DatePicker()
+       // .Format("yyyy-MM-dd")
+        .ParseFormats("yyyy-MM-dd", "MM/dd/yyyy", "dd/MM/yyyy");
+        });
+       //   i.Add().EditorTemplate("<input type='hidden' name='EndDate' value='#= EndDate #' />");
         //  i.Add().Field(f => f.CEPAN).Label(" ");//.EditorTemplate("<input name='Id' type='hidden' />");
       });
       items.AddGroup()
@@ -22,8 +29,7 @@ Html.Kendo().Form<ValueCards.Models.ConsumerTopupModel>()
       {
           i.Add().Field(f => f.CEPAN).InputHtmlAttributes(new { disabled = "disabled" });//.EditorTemplate("<input name='EPAN' class='k-textbox' disabled />");
           i.Add().Field(f => f.StartDate).Label("Start Validity").InputHtmlAttributes(new { disabled = "disabled" });//.EditorTemplate("<input name='Start Validity' class='k-textbox' disabled />");
-          i.Add().Field(f => f.EndDate).Label("End Validity").InputHtmlAttributes(new { disabled = "disabled" });//.EditorTemplate("<input name='End Validity' class='k-textbox' disabled />");
-          //     i.Add().Field(f => f.ValidUntil).EditorTemplate("<input name='ValidUntil' class='k-textbox' disabled />");
+      
      //   i.Add().Field(f => f.Balance).EditorTemplate("<input name='Balance' class='k-textbox' disabled />"); ;
       });
 

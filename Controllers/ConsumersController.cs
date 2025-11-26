@@ -58,7 +58,7 @@ namespace ValueCards.Controllers
             var passData = new DayPassModel
             {
                 CEPAN = passId,
-                EndDate = "2026-05-19",
+                EndDate = DateTime.Now,
                 NumberofDaysRemaining = "45"
             };
             return Json(passData); 
@@ -74,8 +74,8 @@ namespace ValueCards.Controllers
             {
                 Id = i.CTRACK,
                 CEPAN = i.CEPAN,
-                StartDate = i.DTCREAT.ToString(),
-                EndDate = i.DTEXPIRE.ToString(),
+                StartDate = i.DTCREAT,
+                EndDate = i.DTEXPIRE,
                 Amount = i.DAYVALD,
             })
         .FirstOrDefault();
@@ -138,8 +138,9 @@ namespace ValueCards.Controllers
        var diffAmount = entityToUpdate.MAXEXIT - model.Amount;
        entityToUpdate.DAYVALD = model.Amount;
        entityToUpdate.NBEXIT = diffAmount;
+       entityToUpdate.DTEXPIRE = model.EndDate;
        await _dbContext.SaveChangesAsync();
-       _repository.UpdateValue(id,model.Amount);
+       _repository.UpdateValue(id,model.Amount,model.EndDate);
        return Created("", model);
       }
       catch (ApiErrorException aex)

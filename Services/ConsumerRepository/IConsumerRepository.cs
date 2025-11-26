@@ -1,5 +1,6 @@
 ﻿using DayPass.Data;
 using Kendo.Mvc.UI;
+using System;
 using System.Collections.Generic;
 using ValueCards.Models;
 
@@ -11,7 +12,7 @@ namespace ValueCards.Services
 
     IEnumerable<CONGBARCODE> Read(DataSourceRequest request);
 
-    void UpdateValue(string epan, decimal toppedUpAmount);
+    void UpdateValue(string epan, decimal toppedUpAmount, DateTime? endDate);
     IEnumerable<ConsumerDetail> APIConsumers { get; }
 
    IEnumerable<ConsumerDetail> APIRead(DataSourceRequest request);

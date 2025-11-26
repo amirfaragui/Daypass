@@ -48,8 +48,8 @@ namespace ValueCards.Services
             {
                 Id = i.CTRACK,
                 CEPAN = i.CEPAN,
-                StartDate = i.DTCREAT.ToString(),
-                EndDate = i.DTEXPIRE.ToString(),
+                StartDate = i.DTCREAT,
+                EndDate = i.DTEXPIRE,
                 NumberofDaysPurchased = i.MAXEXIT.ToString(),
                 NumberofDaysRemaining = i.DAYVALD.ToString(),
             });

@@ -116,9 +116,11 @@ namespace ValueCards.Models
         [Editable(false)]
         public string CEPAN { get; set; }
         [Editable(false)]
-        public string StartDate { get; set; }
-        [Editable(false)]
-        public string EndDate { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? StartDate { get; set; }
+        //[Editable(false)]
+        [DataType(DataType.Date)]
+        public DateTime? EndDate { get; set; }
         [Editable(false)]
         public string NumberofDaysPurchased { get; set; }
         [Editable(false)]
