@@ -14,7 +14,7 @@ Html.Kendo().Form<ValueCards.Models.ConsumerTopupModel>()
       .Items(i =>
       {
           i.Add().Field(f => f.Amount).Label("Number of Days");
-          i.Add().Field(f => f.EndDate).Editor(e =>
+          i.Add().Field(f => f.EndDate).Label("End Validity").Editor(e =>
        {
          e.DatePicker()
        // .Format("yyyy-MM-dd")
